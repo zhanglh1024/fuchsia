@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/rpc"
@@ -15,7 +16,7 @@ type Qoutient struct {
 type Arinth int
 
 func (arin *Arinth) Muxty(arg *Args, reply *int) error {
-	rereply = arg.A * arg.B
+	*reply = arg.A * arg.B
 	return nil
 }
 func (t *Arinth) Divide(arg *Args, qui *Qoutient) error {
@@ -29,7 +30,7 @@ func (t *Arinth) Divide(arg *Args, qui *Qoutient) error {
 
 func main() {
 	arinth := new(Arinth)
-	rpc.Register(arith)
+	rpc.Register(arinth)
 	rpc.HandleHTTP()
 
 	err := http.ListenAndServe(":1234", nil)
