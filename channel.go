@@ -9,7 +9,7 @@ func add1(ch chan int) {
 	for i := 0; i < 6; i++ {
 		ch <- i
 	}
-}
+}//hello nice work
 func add2(ch chan int) {
 	for i := 0; i < 6; i++ {
 		ch <- i
