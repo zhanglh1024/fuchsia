@@ -13,7 +13,7 @@ func f(n, m int, ch chan int) {
 }
 func f1(ch chan int, done chan bool) {
 	for v := range ch {
-		fmt.Println(v)
+		fmt.Println(v) //println test
 	}
 	done <- true
 }

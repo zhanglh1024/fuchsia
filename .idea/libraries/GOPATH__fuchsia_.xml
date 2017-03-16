@@ -1,0 +1,53 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;fuchsia&gt;">
+    <CLASSES>
+      <root url="file://$USER_HOME$/Git/src/gen-go" />
+      <root url="file://$USER_HOME$/Git/src/ename_common" />
+      <root url="file://$USER_HOME$/Git/src/user-rpc_bak" />
+      <root url="file://$USER_HOME$/Git/src/enameepp" />
+      <root url="file://$USER_HOME$/Git/src/pkg" />
+      <root url="file://$USER_HOME$/Git/src/vsp" />
+      <root url="file://$USER_HOME$/Git/src/enamenet" />
+      <root url="file://$USER_HOME$/Git/src/manage-go-rpc" />
+      <root url="file://$USER_HOME$/Git/src/wregx" />
+      <root url="file://$USER_HOME$/Git/src/enamequeue" />
+      <root url="file://$USER_HOME$/Git/src/Demo" />
+      <root url="file://$USER_HOME$/Git/src/src" />
+      <root url="file://$USER_HOME$/Git/src/github.com" />
+      <root url="file://$USER_HOME$/Git/src/golang.org" />
+      <root url="file://$USER_HOME$/Git/src/git.apache.org" />
+      <root url="file://$USER_HOME$/Git/src/user-rpc" />
+      <root url="file://$USER_HOME$/Git/src/gopkg.in" />
+      <root url="file://$USER_HOME$/Git/src/newtrans" />
+      <root url="file://$USER_HOME$/Git/src/user" />
+      <root url="file://$USER_HOME$/Git/src/finance" />
+      <root url="file://$USER_HOME$/Git/src/bak" />
+    </CLASSES>
+    <SOURCES>
+      <root url="file://$USER_HOME$/Git/src/gen-go" />
+      <root url="file://$USER_HOME$/Git/src/ename_common" />
+      <root url="file://$USER_HOME$/Git/src/user-rpc_bak" />
+      <root url="file://$USER_HOME$/Git/src/enameepp" />
+      <root url="file://$USER_HOME$/Git/src/pkg" />
+      <root url="file://$USER_HOME$/Git/src/vsp" />
+      <root url="file://$USER_HOME$/Git/src/enamenet" />
+      <root url="file://$USER_HOME$/Git/src/manage-go-rpc" />
+      <root url="file://$USER_HOME$/Git/src/wregx" />
+      <root url="file://$USER_HOME$/Git/src/enamequeue" />
+      <root url="file://$USER_HOME$/Git/src/Demo" />
+      <root url="file://$USER_HOME$/Git/src/src" />
+      <root url="file://$USER_HOME$/Git/src/github.com" />
+      <root url="file://$USER_HOME$/Git/src/golang.org" />
+      <root url="file://$USER_HOME$/Git/src/git.apache.org" />
+      <root url="file://$USER_HOME$/Git/src/user-rpc" />
+      <root url="file://$USER_HOME$/Git/src/gopkg.in" />
+      <root url="file://$USER_HOME$/Git/src/newtrans" />
+      <root url="file://$USER_HOME$/Git/src/user" />
+      <root url="file://$USER_HOME$/Git/src/finance" />
+      <root url="file://$USER_HOME$/Git/src/bak" />
+    </SOURCES>
+    <excluded>
+      <root url="file://$PROJECT_DIR$" />
+    </excluded>
+  </library>
+</component>
