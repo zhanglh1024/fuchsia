@@ -1,0 +1,11 @@
+mode: set
+beginner-server/app/domain/hero/herosvc/hero.go:11.62,13.16 2 1
+beginner-server/app/domain/hero/herosvc/hero.go:17.2,19.34 3 1
+beginner-server/app/domain/hero/herosvc/hero.go:25.2,25.19 1 1
+beginner-server/app/domain/hero/herosvc/hero.go:13.16,16.3 2 0
+beginner-server/app/domain/hero/herosvc/hero.go:19.34,23.3 3 1
+beginner-server/app/domain/hero/herosvc/hero.go:29.86,32.2 2 1
+beginner-server/app/domain/hero/herosvc/hero.go:35.75,39.2 3 1
+beginner-server/app/domain/hero/herosvc/hero.go:42.62,44.2 1 1
+beginner-server/app/domain/hero/herosvc/hero.go:48.124,52.2 3 1
+beginner-server/app/domain/hero/herosvc/hero.go:55.54,57.2 1 1

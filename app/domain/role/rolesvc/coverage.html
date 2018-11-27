@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">beginner-server/app/domain/role/rolesvc/rolesvc.go (82.9%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package rolesvc
+
+import (
+    "arthur/utils/log"
+    "beginner-server/app"
+    "beginner-server/app/domain/battle/battleobj"
+    "beginner-server/app/domain/hero/heroobj"
+    "beginner-server/app/domain/resource/resourceobj"
+    "beginner-server/app/domain/role/roleobj"
+    "beginner-server/app/model"
+    "beginner-server/app/model/dyn"
+    "bytes"
+    "crypto/des"
+    "encoding/hex"
+    "errors"
+    "strings"
+)
+
+var key = []byte("2fa6c1e9")
+
+
+//获取用户信息
+func GetRoleInfo(roleId string) (dyn.RoleInfoDyn, error) <span class="cov8" title="1">{
+    roleObj:=roleobj.RoleObj{}
+    info, err := roleObj.GetRoleInfoByRoleId(roleId)
+    return info, err
+}</span>
+
+
+//roleId的用户是否存在
+func IsExitRoleInfo(roleId string) bool <span class="cov8" title="1">{
+    roleObj := roleobj.RoleObj{}
+    return roleObj.IsIncludeRoleInfoRoleId(roleId)
+}</span>
+
+//注册操作
+func Register(userId, name, password string) app.CodeErrorType<span class="cov8" title="1">{
+        roleObj := roleobj.RoleObj{}
+
+    includeRoleId := roleObj.IsIncludeRoleInfoRoleId(userId)
+    if !includeRoleId</span><span class="cov0" title="0">{
+        return app.RoleIdAlreadyExists
+    }</span>
+
+    <span class="cov8" title="1">includeName := roleObj.IsIncludeRoleInfoName(name)
+    if !includeName</span><span class="cov0" title="0">{
+        return app.RoleNameAlreadyExists
+    }</span>
+
+    <span class="cov8" title="1">passwordEncrypted, err := Encrypt(password, key)
+    if err != nil </span><span class="cov0" title="0">{
+        log.Fatal(err)
+    }</span>
+
+        <span class="cov8" title="1">Code1 := roleObj.InsertRoleInfo(userId,name, passwordEncrypted)
+        if Code1 != 0</span><span class="cov0" title="0">{
+            return app.InsertDataError
+    }</span>
+    <span class="cov8" title="1">flag := initHero(userId)
+    if flag != nil</span><span class="cov0" title="0">{
+        return app.InsertDataError
+    }</span>
+    <span class="cov8" title="1">err1 := initResource(userId)
+    if err1 != nil</span><span class="cov0" title="0">{
+        return app.InsertDataError
+    }</span>
+
+    <span class="cov8" title="1">err = InitResourceFresh(userId)
+    if err != nil</span><span class="cov0" title="0">{
+        return app.InsertDataError
+    }</span>
+
+    <span class="cov8" title="1">err = initCurrentLevel(userId)
+    if err != nil</span><span class="cov0" title="0">{
+        return 5
+    }</span>
+
+    <span class="cov8" title="1">err = initMatchBattle(userId)
+    if err != nil</span><span class="cov0" title="0">{
+        return app.InsertDataError
+    }</span>
+
+        <span class="cov8" title="1">return 0</span>
+
+}
+
+//用户密码验证
+func LoginVerification(roleId, password string)(bool,error)<span class="cov8" title="1">{
+
+    roleObj := roleobj.RoleObj{}
+    Info , err := roleObj.GetRoleInfoByRoleId(roleId)
+    if err != nil</span><span class="cov0" title="0">{
+        log.Debugf("获取账号信息错误%s", err)
+        return false, err
+    }</span>
+
+    //密码信息解码
+    <span class="cov8" title="1">strDecrypted, err := Decrypt(Info.Password, key)
+    if err != nil </span><span class="cov0" title="0">{
+        log.Fatal(err)
+        return false, errors.New("解密失败")
+    }</span>
+
+    <span class="cov8" title="1">correct := strings.Compare(strDecrypted, password)
+    if correct == 0 </span><span class="cov8" title="1">{
+        return true, nil
+    }</span>
+
+    <span class="cov0" title="0">return false, errors.New("密码错误")</span>
+}
+
+//初始化英雄数据
+func initHero(roleId string) error <span class="cov8" title="1">{
+    hero := model.ProfConfig.ConfHero[0]
+    herodyn := dyn.HeroInfoDyn{}
+    herodyn.No = int(hero.HeroNum)
+    herodyn.Lv = 1
+    herodyn.RoleId = roleId
+    herodyn.Wise = hero.InitWise
+    herodyn.Loyal = hero.InitLoyalty
+    herodyn.Diligent = hero.InitDiligent
+    herodyn.Heroic = hero.InitHeroic
+    err := heroobj.InsertHeroValue(herodyn)
+
+    return err
+}</span>
+
+//初始化用户资源数据
+func initResource(roleId string)error<span class="cov8" title="1">{
+    resource := dyn.ResourceInfoDyn{}
+    resource.RoleId = roleId
+    resource.Soldier = 1000
+    resource.Coin = 1000
+    resource.Food = 1000
+
+    err := resourceobj.InsertResource(resource)
+    return err
+}</span>
+
+//初始化关卡数据
+func initCurrentLevel(roleId string) error <span class="cov8" title="1">{
+    info := model.ProfConfig.ConfLever[0]
+    CurrentLevel := dyn.LevelBattle{}
+    CurrentLevel.RoleId = roleId
+    CurrentLevel.RoundId = int(info.No)
+    CurrentLevel.SoldierLeft = int(info.SoldierNum)
+    CurrentLevel.HeroFight = int(info.HeroFight)
+    return battleobj.InsertLevelBattleValue(CurrentLevel)
+}</span>
+
+//初始化战斗匹配数据
+func initMatchBattle(roleId string) error <span class="cov8" title="1">{
+    info := dyn.MatchBattle{}
+    info.RoleId = roleId
+    info.Integral = 0
+    info.Register = 0
+    info.HeroNo = 0
+    info.Soldier = 0
+    return battleobj.InsertDateIntoMatchBattle(info)
+}</span>
+
+//初始化资源更新时间数据
+func InitResourceFresh(roleId string)error<span class="cov8" title="1">{
+    refreshResource := resourceobj.ResourceRefreshObj{}
+    for _,v := range app.ResourceTypeList</span><span class="cov8" title="1">{
+        err := refreshResource.InsertResourceRefreshTime(roleId,v,0)
+        if err != nil</span><span class="cov0" title="0">{
+            log.Errorf("初始化資源表錯誤")
+            return err
+        }</span>
+    }
+    <span class="cov8" title="1">return nil</span>
+}
+
+
+func ZeroPadding(ciphertext []byte, blockSize int) []byte <span class="cov8" title="1">{
+    padding := blockSize - len(ciphertext)%blockSize
+    padtext := bytes.Repeat([]byte{0}, padding)
+    return append(ciphertext, padtext...)
+}</span>
+
+func ZeroUnPadding(origData []byte) []byte <span class="cov8" title="1">{
+    return bytes.TrimFunc(origData,
+        func(r rune) bool </span><span class="cov8" title="1">{
+            return r == rune(0)
+        }</span>)
+}
+
+
+//加密数据
+func Encrypt(text string, key []byte) (string, error) <span class="cov8" title="1">{
+    src := []byte(text)
+    block, err := des.NewCipher(key)
+    if err != nil </span><span class="cov0" title="0">{
+        return "", err
+    }</span>
+    <span class="cov8" title="1">bs := block.BlockSize()
+    src = ZeroPadding(src, bs)
+    if len(src)%bs != 0 </span><span class="cov0" title="0">{
+        return "", errors.New("Need a multiple of the blocksize")
+    }</span>
+    <span class="cov8" title="1">out := make([]byte, len(src))
+    dst := out
+    for len(src) &gt; 0 </span><span class="cov8" title="1">{
+        block.Encrypt(dst, src[:bs])
+        src = src[bs:]
+        dst = dst[bs:]
+    }</span>
+    <span class="cov8" title="1">return hex.EncodeToString(out), nil</span>
+}
+
+//数据解密
+
+func Decrypt(decrypted string , key []byte) (string, error) <span class="cov8" title="1">{
+    src, err := hex.DecodeString(decrypted)
+    if err != nil </span><span class="cov0" title="0">{
+        return "", err
+    }</span>
+    <span class="cov8" title="1">block, err := des.NewCipher(key)
+    if err != nil </span><span class="cov0" title="0">{
+        return "", err
+    }</span>
+    <span class="cov8" title="1">out := make([]byte, len(src))
+    dst := out
+    bs := block.BlockSize()
+    if len(src)%bs != 0 </span><span class="cov0" title="0">{
+        return "", errors.New("crypto/cipher: input not full blocks")
+    }</span>
+    <span class="cov8" title="1">for len(src) &gt; 0 </span><span class="cov8" title="1">{
+        block.Decrypt(dst, src[:bs])
+        src = src[bs:]
+        dst = dst[bs:]
+    }</span>
+    <span class="cov8" title="1">out = ZeroUnPadding(out)
+    return string(out), nil</span>
+}</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

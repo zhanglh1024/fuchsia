@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">beginner-server/app/domain/resource/resourcesvc/resource.go (85.0%)</option>
+				
+				<option value="file1">beginner-server/app/domain/resource/resourcesvc/resource_refresh.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package resourcesvc
+
+import (
+        "arthur/utils/log"
+        "beginner-server/app"
+        "beginner-server/app/domain/hero/heroobj"
+        "beginner-server/app/domain/resource/resourceobj"
+        "beginner-server/app/model/dyn"
+)
+
+
+//根据用户Id查找用户所有的资源信息
+func GetResourceInfoByRoleId(roleId string)  ([]app.ResourceInfo, error)<span class="cov8" title="1">{
+
+        resouInfos := make([]app.ResourceInfo, 3)
+
+        resourceInfo, err := resourceobj.GetResourceInfoByRoleId(roleId)
+        if err != nil </span><span class="cov0" title="0">{
+                return resouInfos, err
+        }</span>
+
+        <span class="cov8" title="1">for k,value := range app.ResourceTypeList</span><span class="cov8" title="1">{
+                resouInfos[k].Type = value
+                switch value </span>{
+                case app.FOOD:<span class="cov8" title="1">
+                        resouInfos[k].Count = int(resourceInfo.Food)</span>
+                case app.SOLDIER:<span class="cov8" title="1">
+                        resouInfos[k].Count = int(resourceInfo.Soldier)</span>
+                default:<span class="cov8" title="1">
+                        resouInfos[k].Count = int(resourceInfo.Coin)</span>
+                }
+
+        }
+
+        <span class="cov8" title="1">return resouInfos, nil</span>
+
+}
+
+//根据用户id来获取用户资源
+func GetRoleResourceInfoByRoleId(roleId string)(dyn.ResourceInfoDyn, error) <span class="cov8" title="1">{
+        info, err := resourceobj.GetResourceInfoByRoleId(roleId)
+        return info, err
+}</span>
+
+//更新用户资源信息，收集资源handler调用
+func UpdateResourceByRoleId(roleId string, resourceType app.ResourceType) error  <span class="cov8" title="1">{
+        heros ,err := heroobj.GetHeroInfoByRoleId(roleId)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Errorf("获取英雄数据出错:%s", err)
+                return err
+        }</span>
+        <span class="cov8" title="1">wise,loyal,diligent := 0, 0, 0
+        for _, hero := range heros</span><span class="cov8" title="1">{
+                wise += hero.Wise
+                loyal += hero.Loyal
+                diligent += hero.Diligent
+        }</span>
+
+        <span class="cov8" title="1">resourceInfo, err := resourceobj.GetResourceInfoByRoleId(roleId)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Errorf("获取资源数据出错：%s", err)
+                return err
+        }</span>
+
+        <span class="cov8" title="1">switch resourceType </span>{
+        case app.FOOD:<span class="cov8" title="1">
+                resourceInfo.Food = int64(((diligent-1)/3)*10 + 100) + resourceInfo.Food</span>
+        case app.SOLDIER:<span class="cov8" title="1">
+                resourceInfo.Soldier = int64(((loyal-1)/3)*10 + 100) + resourceInfo.Soldier</span>
+        case app.GOLD:<span class="cov8" title="1">
+                resourceInfo.Coin = int64(((wise-1)/3)*10 + 100) + resourceInfo.Coin</span>
+        }
+
+        <span class="cov8" title="1">err= resourceobj.UpdateResource(roleId,resourceInfo)
+        return err</span>
+
+}
+
+//更新资源信息不设置成默认值的借口
+func UpgradeHeroLvCostResource(roleId string, resourceInfo dyn.ResourceInfoDyn) (error) <span class="cov8" title="1">{
+        return resourceobj.UpdateResource(roleId, resourceInfo)
+}</span>
+
+//func UpdateSoldierForFight(cost int, resourceDyn dyn.ResourceInfoDyn) error {
+//        if cost &gt; int(resourceDyn.Soldier){
+//                resourceDyn.Soldier = 0
+//        }else{
+//                resourceDyn.Soldier -= int64(cost)
+//        }
+//        return resourceobj.UpdateSoldierNum(resourceDyn.RoleId, resourceDyn)
+//}
+
+//更新资源信息需要设置成默认值0调用这个更新接口
+func UpdateMatchBattleData(cost int,RoleId string, soldierCount int) error <span class="cov8" title="1">{
+        info := dyn.ResourceInfoDyn{
+                RoleId:RoleId,
+        }
+        if cost &gt;= soldierCount</span><span class="cov8" title="1">{
+                soldierCount = 0
+        }</span>else<span class="cov0" title="0">{
+                soldierCount -= cost
+        }</span>
+        <span class="cov8" title="1">info.Soldier = int64(soldierCount)
+        log.Info(info)
+        return resourceobj.UpdateSoldierNum(RoleId, info)</span>
+}
+
+
+
+
+
+
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package resourcesvc
+
+import (
+        "beginner-server/app"
+        "beginner-server/app/domain/resource/resourceobj"
+        "beginner-server/app/model/dyn"
+)
+
+
+//获取玩家收集资源时间
+func GetResourceTime(roleId string, resourceType app.ResourceType) (dyn.ResourceRefresh, error) <span class="cov8" title="1">{
+        resourceRefresh := resourceobj.ResourceRefreshObj{}
+        resourceTime, err := resourceRefresh.GetResourceRefreshTime(roleId, resourceType)
+        return resourceTime, err
+}</span>
+
+//插入玩家收集资源时间
+func InsertResourceTime(roleId string, resourceType app.ResourceType, first int) error <span class="cov8" title="1">{
+        resourceRefresh := resourceobj.ResourceRefreshObj{}
+        return resourceRefresh.InsertResourceRefreshTime(roleId, resourceType, first)
+}</span>
+
+//刷新玩家收集资源时间
+func UpdateResourceRefresh(roleId string,resourceType app.ResourceType, first int)error  <span class="cov8" title="1">{
+        resourceRefresh := resourceobj.ResourceRefreshObj{}
+        return resourceRefresh.UpdateResourceRefreshTime(roleId, resourceType, first)
+}</span>
+
+func DeleteResourceTime(roleId string) error <span class="cov8" title="1">{
+        return resourceobj.DeleteResourceRefreshTime(roleId)
+}</span>
+
+
+//数据表中是否存在改玩家信息
+func IsExitRoleIdInTable(roleId string) bool <span class="cov8" title="1">{
+        return resourceobj.IsIncludeResourceRefreshInfoRoleId(roleId)
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
