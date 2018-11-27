@@ -1,2 +1,0 @@
-# fuchsia
-hello world github
